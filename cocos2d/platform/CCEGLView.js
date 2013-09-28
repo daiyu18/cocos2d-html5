@@ -227,7 +227,7 @@ cc.EGLView = cc.Class.extend(/** @lends cc.EGLView# */{
      * @return {cc.Size}
      */
     getFrameSize:function () {
-        return this._screenSize;
+        return cc.size(this._screenSize.width, this._screenSize.height);
     },
 
     /**
@@ -257,7 +257,7 @@ cc.EGLView = cc.Class.extend(/** @lends cc.EGLView# */{
         if (this._resolutionPolicy === cc.RESOLUTION_POLICY.NOBORDER) {
             return cc.size(this._screenSize.width / this._scaleX, this._screenSize.height / this._scaleY);
         } else {
-            return this._designResolutionSize;
+            return cc.size(this._designResolutionSize.width, this._designResolutionSize.height);
         }
     },
 
@@ -337,17 +337,17 @@ cc.EGLView = cc.Class.extend(/** @lends cc.EGLView# */{
         director._winSizeInPoints = this.getDesignResolutionSize();
 
         if (cc.renderContextType === cc.CANVAS) {
-            var locWidth = 0, locHeight = 0;
             if (this._resolutionPolicy === cc.RESOLUTION_POLICY.SHOW_ALL) {
-                locWidth = (this._screenSize.width - viewPortW) / 2;
-                locHeight = -(this._screenSize.height - viewPortH) / 2;
-                var context = cc.renderContext;
-                context.beginPath();
-                context.rect(locWidth, -viewPortH + locHeight, viewPortW, viewPortH);
-                context.clip();
-                context.closePath();
+                var locHeight = Math.abs(this._screenSize.height - viewPortH) / 2;
+                cc.canvas.width = viewPortW;
+                cc.canvas.height = viewPortH;
+                cc.container.style.width = viewPortW + "px";
+                cc.container.style.height = viewPortH + "px";
+                cc.renderContext.translate(0, viewPortH);
+                this._ele.style.paddingTop = locHeight + "px";
+                this._ele.style.paddingBottom = locHeight + "px";
+                this._viewPortRect = cc.rect(0, 0, viewPortW, viewPortH);
             }
-            cc.renderContext.translate(locWidth, locHeight);
             cc.renderContext.scale(this._scaleX, this._scaleY);
         } else {
             // reset director's member variables to fit visible rect
@@ -363,7 +363,7 @@ cc.EGLView = cc.Class.extend(/** @lends cc.EGLView# */{
      * @return {cc.Size}
      */
     getDesignResolutionSize:function () {
-        return this._designResolutionSize;
+        return cc.size(this._designResolutionSize.width, this._designResolutionSize.height);
     },
 
     /**
@@ -416,7 +416,7 @@ cc.EGLView = cc.Class.extend(/** @lends cc.EGLView# */{
     getScissorRect:function () {
         var gl = cc.renderContext, scaleX = this._scaleX, scaleY = this._scaleY;
         var boxArr = gl.getParameter(gl.SCISSOR_BOX);
-        return cc.RectMake((boxArr[0] - this._viewPortRect.x) / scaleX, (boxArr[1] - this._viewPortRect.y) / this._scaleY,
+        return cc.rect((boxArr[0] - this._viewPortRect.x) / scaleX, (boxArr[1] - this._viewPortRect.y) / this._scaleY,
             boxArr[2] / scaleX, boxArr[3] / scaleY);
     },
 
@@ -653,10 +653,12 @@ cc.EGLView = cc.Class.extend(/** @lends cc.EGLView# */{
         var ys = [];
 
         var i = 0;
+        var touch;
         for (var j = 0; j < touches.length; j++) {
-            ids[i] = j;
-            xs[i] = touches[j].getLocation().x;
-            ys[i] = touches[j].getLocation().y;
+        	touch = touches[j];
+            ids[i] = touch.getId() || j;
+            xs[i] = touch.getLocation().x;
+            ys[i] = touch.getLocation().y;
             ++i;
         }
         this.handleTouchesBegin(i, ids, xs, ys);
@@ -668,10 +670,12 @@ cc.EGLView = cc.Class.extend(/** @lends cc.EGLView# */{
         var ys = [];
 
         var i = 0;
+        var touch;
         for (var j = 0; j < touches.length; j++) {
-            ids[i] = j;
-            xs[i] = touches[j].getLocation().x;
-            ys[i] = touches[j].getLocation().y;
+        	touch = touches[j];
+            ids[i] = touch.getId() || j;
+            xs[i] = touch.getLocation().x;
+            ys[i] = touch.getLocation().y;
             ++i;
         }
         this.handleTouchesMove(i, ids, xs, ys);
@@ -683,10 +687,12 @@ cc.EGLView = cc.Class.extend(/** @lends cc.EGLView# */{
         var ys = [];
 
         var i = 0;
+        var touch;
         for (var j = 0; j < touches.length; j++) {
-            ids[i] = j;
-            xs[i] = touches[j].getLocation().x;
-            ys[i] = touches[j].getLocation().y;
+        	touch = touches[j];
+            ids[i] = touch.getId() || j;
+            xs[i] = touch.getLocation().x;
+            ys[i] = touch.getLocation().y;
             ++i;
         }
         this.handleTouchesEnd(i, ids, xs, ys);
@@ -698,10 +704,12 @@ cc.EGLView = cc.Class.extend(/** @lends cc.EGLView# */{
         var ys = [];
 
         var i = 0;
+        var touch;
         for (var j = 0; j < touches.length; j++) {
-            ids[i] = j;
-            xs[i] = touches[j].getLocation().x;
-            ys[i] = touches[j].getLocation().y;
+        	touch = touches[j];
+            ids[i] = touch.getId() || j;
+            xs[i] = touch.getLocation().x;
+            ys[i] = touch.getLocation().y;
             ++i;
         }
         this.handleTouchesCancel(i, ids, xs, ys);

@@ -70,8 +70,8 @@ cc.SpriteLoader = cc.NodeLoader.extend({
     },
     onHandlePropTypeFlip:function (node, parent, propertyName, flip, ccbReader) {
         if (propertyName === PROPERTY_FLIP) {
-            node.setFlipX(flip[0]);
-            node.setFlipY(flip[1]);
+            node.setFlippedX(flip[0]);
+            node.setFlippedY(flip[1]);
         } else {
             cc.NodeLoader.prototype.onHandlePropTypeFlip.call(this, node, parent, propertyName, flip, ccbReader);
         }
@@ -418,9 +418,9 @@ var PROPERTY_STARTRADIUS = "startRadius";
 var PROPERTY_ENDRADIUS = "endRadius";
 var PROPERTY_ROTATEPERSECOND = "rotatePerSecond";
 
-cc.ParticleSystemQuadLoader = cc.NodeLoader.extend({
+cc.ParticleSystemLoader = cc.NodeLoader.extend({
     _createCCNode:function (parent, ccbReader) {
-        return cc.ParticleSystemQuad.create();
+        return cc.ParticleSystem.create();
     },
 
     onHandlePropTypeIntegerLabeled:function (node, parent, propertyName, integerLabeled, ccbReader) {
@@ -523,8 +523,8 @@ cc.ParticleSystemQuadLoader = cc.NodeLoader.extend({
     }
 });
 
-cc.ParticleSystemQuadLoader.loader = function () {
-    return new cc.ParticleSystemQuadLoader();
+cc.ParticleSystemLoader.loader = function () {
+    return new cc.ParticleSystemLoader();
 };
 
 

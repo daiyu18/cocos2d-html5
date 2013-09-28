@@ -51,7 +51,7 @@ cc.ScrollViewDelegate = cc.Class.extend({
 });
 
 /**
- * ScrollView support for cocos2d for iphone.
+ * ScrollView support for cocos2d -x.
  * It provides scroll view functionalities to cocos2d projects natively.
  */
 cc.ScrollView = cc.Layer.extend({
@@ -97,11 +97,11 @@ cc.ScrollView = cc.Layer.extend({
     },
 
     init:function () {
-        return this.initWithViewSize(cc.SizeMake(200, 200), null);
+        return this.initWithViewSize(cc.size(200, 200), null);
     },
 
     registerWithTouchDispatcher:function () {
-        cc.Director.getInstance().getTouchDispatcher().addTargetedDelegate(this, this.getTouchPriority(), false);
+        cc.registerTargetedDelegate(this.getTouchPriority(), false, this);
     },
 
     /**
@@ -145,7 +145,7 @@ cc.ScrollView = cc.Layer.extend({
      * Sets a new content offset. It ignores max/min offset. It just sets what's given. (just like UIKit's UIScrollView)
      *
      * @param {cc.Point} offset new offset
-     * @param {Number} [animated=] If YES, the view scrolls to the new offset
+     * @param {Number} [animated=] If true, the view will scroll to the new offset
      */
     setContentOffset: function (offset, animated) {
         if (animated) { //animate scrolling
@@ -272,7 +272,7 @@ cc.ScrollView = cc.Layer.extend({
         var size = this.getViewSize();
         var scale = this.getZoomScale();
 
-        var viewRect = cc.RectMake(-offset.x / scale, -offset.y / scale, size.width / scale, size.height / scale);
+        var viewRect = cc.rect(-offset.x / scale, -offset.y / scale, size.width / scale, size.height / scale);
 
         return cc.rectIntersectsRect(viewRect, node.getBoundingBox());
     },
@@ -372,7 +372,7 @@ cc.ScrollView = cc.Layer.extend({
         if (!this.isVisible())
             return false;
         //var frameOriginal = this.getParent().convertToWorldSpace(this.getPosition());
-        //var frame = cc.RectMake(frameOriginal.x, frameOriginal.y, this._viewSize.width, this._viewSize.height);
+        //var frame = cc.rect(frameOriginal.x, frameOriginal.y, this._viewSize.width, this._viewSize.height);
         var frame = this._getViewRect();
 
         //dispatcher does not know about clipping. reject touches outside visible bounds.
@@ -386,7 +386,7 @@ cc.ScrollView = cc.Layer.extend({
         locTouches.push(touch);
         //}
 
-        if (locTouches.length == 1) { // scrolling
+        if (locTouches.length === 1) { // scrolling
             this._touchPoint = this.convertTouchToNodeSpace(touch);
             this._touchMoved = false;
             this._dragging = true; //dragging started
@@ -411,7 +411,7 @@ cc.ScrollView = cc.Layer.extend({
         if (this._touches.length === 1 && this._dragging) { // scrolling
             this._touchMoved = true;
             //var frameOriginal = this.getParent().convertToWorldSpace(this.getPosition());
-            //var frame = cc.RectMake(frameOriginal.x, frameOriginal.y, this._viewSize.width, this._viewSize.height);
+            //var frame = cc.rect(frameOriginal.x, frameOriginal.y, this._viewSize.width, this._viewSize.height);
             var frame = this._getViewRect();
 
             //var newPoint = this.convertTouchToNodeSpace(this._touches[0]);
@@ -549,8 +549,9 @@ cc.ScrollView = cc.Layer.extend({
                 // draw children zOrder >= 0
                 for (; i < childrenLen; i++)
                     locChildren[i].visit(context);
-            } else
+            } else{
                 this.draw(context);             // self draw
+            }
 
             this._afterDraw();
 
@@ -582,8 +583,9 @@ cc.ScrollView = cc.Layer.extend({
                 // draw children zOrder >= 0
                 for (; i < childrenLen; i++)
                     locChildren[i].visit();
-            } else
+            } else{
                 this.draw(context);
+            }
 
             this._afterDraw(context);
             if (locGrid && locGrid.isActive())
